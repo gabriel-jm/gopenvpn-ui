@@ -24,6 +24,10 @@ func main() {
 		templates.RenderTemplate(w, "index", nil)
 	})
 
+	http.HandleFunc("/conn", func(w http.ResponseWriter, r *http.Request) {
+		templates.RenderTemplate(w, "add-connection", nil)
+	})
+
 	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			username := r.FormValue("username")

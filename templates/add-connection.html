@@ -12,21 +12,23 @@
 </head>
 <body>
   <main class="container">
-    <h1>OpenVPN 3 UI Client</h1>
-
-    <h3>Connections</h3>
-
-    <a role="button" href="/conn">Add Connection</a>
-
-    <ul>
-      {{range .Connections}}
-      <li>{{.Address}}@{{.Username}}</li>
-      {{end}}
-    </ul>
-
-    {{if .EmptyConnections}}
-    <p>No connections</p>
-    {{end}}
+    <h1>
+      <a class="clean contrast" href="/">OpenVPN 3 UI Client</a>
+    </h1>
+  
+    <h3>Add Connections</h3>
+  
+    <form action="/" method="post">
+      <label>
+        <p>Username</p>
+        <input type="text" name="username">
+      </label>
+      <label>
+        <p>Password</p>
+        <input type="password" name="password">
+      </label>
+      <button>Connect</button>
+    </form>
   </main>
 </body>
 </html>

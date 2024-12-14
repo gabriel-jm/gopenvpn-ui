@@ -1,5 +1,21 @@
+html, body {
+  height: 100%;
+}
+
 body {
   font-family: monospace;
-  color: #ddd;
-  background-color: #04081c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main.container {
+  padding: 20px;
+  border: 1px solid #616161;
+  border-radius: 6px;
+  box-shadow: 0 0 3px 1px #333;
+}
+
+a.clean {
+  text-decoration: none;
 }
