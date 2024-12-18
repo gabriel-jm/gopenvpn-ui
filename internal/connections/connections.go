@@ -1,6 +1,7 @@
 package connections
 
 import (
+	"crypto/tls"
 	base64 "encoding/base64"
 	"fmt"
 	"io"
@@ -8,13 +9,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"time"
 )
 
 func StablishConnection(address, username, password string) error {
 	_, err := downloadProfile(address, username, password)
-
-	log.Println(err)
 
 	if err != nil {
 		return err
@@ -42,7 +42,12 @@ func downloadProfile(address, username, password string) (string, error) {
 	basicAuth := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
 	req.Header.Set("Authorization", "Basic "+basicAuth)
 
-	res, err := http.DefaultClient.Do(req)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+
+	res, err := client.Do(req)
 
 	if err != nil {
 		log.Println("[Download Profile] Error on download request")
@@ -64,9 +69,17 @@ func downloadProfile(address, username, password string) (string, error) {
 		)
 	}
 
-	fileName := time.Now().String() + "-profile.ovpn"
-	filePath := "./profiles/" + fileName
-	err = os.WriteFile(filePath, resBody, 0644)
+	fileName := fmt.Sprintf("%d-profile.ovpn", time.Now().UnixMilli())
+	filePath := "~/.openvpn-profiles/" + fileName
+
+	err = os.Mkdir("~/.openvpn-profiles", 0766)
+
+	if err != nil {
+		log.Println("[Download Profile] Error creating profiles folder")
+		return "", err
+	}
+
+	err = os.WriteFile(filePath, resBody, 0766)
 
 	if err != nil {
 		log.Println("[Download Profile] Error writing file")
@@ -74,4 +87,8 @@ func downloadProfile(address, username, password string) (string, error) {
 	}
 
 	return fileName, nil
+}
+
+func startOpenvpn(fileName string) {
+	_ = exec.Command("openvpn3", "session-start", "-c", "~/.openvpn-profiles/"+fileName)
 }
